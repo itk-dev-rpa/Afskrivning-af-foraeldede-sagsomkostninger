@@ -8,14 +8,14 @@ AFTALE_TYPE = 'ZZAGREEMENTTYPE'
 RIM_TYPE = 'ZZSBS_EFI_AGRTYPE'
 AFTALE_STATUS = 'ZZAFTALESTATUS'
 
-class SapProcess():
+
+class SapProcess:
     """Create one instance of this class to perform SAP tasks. The SAP session is then accessible to all methods.
     """
     def __init__(self):
         self.session = multi_session.get_all_SAP_sessions()[0]
 
-
-    def delete_cost(self,fp: str, aftale: str, bilag: str, dry_run=True) -> None:
+    def delete_cost(self, fp: str, aftale: str, bilag: str, dry_run=True) -> None:
         """Pass the variables forretningspartner, aftalekonto and bilagsnummer in order to delete the dept.
 
         Args:
@@ -88,8 +88,8 @@ class SapProcess():
 
         in21_count = 0
         for x in range(row_count):
-            if postliste_table.GetCellValue(x,RIM_TYPE) == 'IN' and\
-                    postliste_table.GetCellValue(x,AFTALE_STATUS) == '21':
+            if postliste_table.GetCellValue(x, RIM_TYPE) == 'IN' and\
+                    postliste_table.GetCellValue(x, AFTALE_STATUS) == '21':
                 in21_count += 1
 
         if in21_count == row_count:
@@ -140,8 +140,12 @@ class SapProcess():
             pass
 
         # SAP cannot press F12 if button is greyed out
-        try: self.session.findById('wnd[0]').sendVKey(12)  # F12
-        except: pass
-        try: self.session.findById('wnd[0]').sendVKey(12)  # F12
-        except: pass
+        try:
+            self.session.findById('wnd[0]').sendVKey(12)  # F12
+        except:
+            pass
 
+        try:
+            self.session.findById('wnd[0]').sendVKey(12)  # F12
+        except:
+            pass
