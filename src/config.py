@@ -1,0 +1,1 @@
+TABLE_NAME = "fosa_job_queue"
