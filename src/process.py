@@ -3,7 +3,7 @@ from OpenOrchestratorConnection.orchestrator_connection import OrchestratorConne
 from framework.get_constants import Constants
 import config
 from sql_transactions import Database
-from exceptions import BusinessRule, format_message
+from framework import BusinessError
 from sap_process import SapProcess
 
 def process(orchestrator_connection: OrchestratorConnection, constants: Constants) -> None:
@@ -29,10 +29,10 @@ def process(orchestrator_connection: OrchestratorConnection, constants: Constant
             now = datetime.datetime.now()
             db.update_row(row_id=row_id, column_data={'status': 'complete',
                           'date_completed':datetime.datetime(now.year, now.month, now.day, now.hour, now.minute, now.second)})
-        except BusinessRule as e:
+        except BusinessError as error:
             orchestrator_connection.log_info(f"{e}: {fp, aftale, bilag}")
-            db.update_row(row_id=row_id, column_data={'status':format_message(e)})
-        except Exception as e:
+            db.update_row(row_id=row_id, column_data={'status':f"{type(error).__name__}: {error}"})
+        except Exception as error:
             breakpoint()
-            db.update_row(row_id=row_id, column_data={'status':format_message(e)})
-            raise e # raise to framework for screenshot and error logging
+            db.update_row(row_id=row_id, column_data={'status':f"{type(error).__name__}: {error}"})
+            raise error # raise to framework for screenshot and error logging

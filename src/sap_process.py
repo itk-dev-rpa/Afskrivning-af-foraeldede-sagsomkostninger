@@ -1,4 +1,5 @@
 from ITK_dev_shared_components.SAP import multi_session
+from framework import BusinessError
 
 # SAP table column ids
 AFTALE = 'VTREF'
@@ -79,11 +80,11 @@ class SapProcess():
         # count table rows
         row_count = postliste_table.RowCount
         if row_count == 0:
-            raise BusinessRule(f"Proces stoppet: Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
+            raise BusinessError(f"Proces stoppet: Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
 
         # check if there is anything in 'Aft.type' column
         if any([postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)]):
-            raise BusinessRule(f"Manuel behandling (Aft.type).")
+            raise BusinessError(f"Manuel behandling (Aft.type).")
 
         in21_count = 0
         for x in range(row_count):
@@ -93,11 +94,11 @@ class SapProcess():
 
         if in21_count == row_count:
             # all columns are IN 21
-            raise BusinessRule(f"Registreret til inddrivelse (IN 21).")
+            raise BusinessError(f"Registreret til inddrivelse (IN 21).")
 
         if in21_count > 1 and in21_count < row_count:
             # there are multiple rows, and some, but not all, are IN 21
-            raise BusinessRule(f"Manuel behandling. (duplikant bilagsnummer)")
+            raise BusinessError(f"Manuel behandling. (duplikant bilagsnummer)")
 
         # right click and select "Kontovedligehold med filter"
         postliste_table.currentCellColumn = "VTREF"
