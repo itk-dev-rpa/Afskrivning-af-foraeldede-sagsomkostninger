@@ -5,6 +5,8 @@ class Constants:
     """Define your constants."""
     def __init__(self):
         self.error_email = None
+        self.dry_run = True
+        self.connection_string = None
 
 
 def get_constants(orchestrator_connection: OrchestratorConnection) -> Constants:
@@ -14,5 +16,12 @@ def get_constants(orchestrator_connection: OrchestratorConnection) -> Constants:
 
     # Get email address to send error screenshots to
     constants.error_email = orchestrator_connection.get_constant("Error Email")
+    constants.connection_string = orchestrator_connection.get_constant('Connection string')
+
+    try:
+        orchestrator_connection.get_constant("Activate fosa")
+        constants.dry_run = False
+    except:
+        orchestrator_connection.log_info("Dry run! SAP data will not be modified.")
 
     return constants

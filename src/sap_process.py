@@ -1,5 +1,5 @@
 from ITK_dev_shared_components.SAP import multi_session
-from framework import BusinessError
+from src.exceptions import BusinessError
 
 # SAP table column ids
 AFTALE = 'VTREF'

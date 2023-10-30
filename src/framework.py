@@ -1,12 +1,13 @@
 import traceback
 import sys
 from OpenOrchestratorConnection.orchestrator_connection import OrchestratorConnection
-import get_constants
-import reset
-import error_screenshot
-import process
-import queue
-import config
+from src import get_constants
+from src import reset
+from src import error_screenshot
+from src import process
+from src import queue
+from src import config
+from src.exceptions import BusinessError
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
         try:
             orchestrator_connection.log_trace("Resetting.")
             reset.reset(orchestrator_connection)
-            db = queue.Database(table_name=config.TABLE_NAME, connection_string=orchestrator_connection.get_constant('connection_string'))
+            db = queue.Database(table_name=config.TABLE_NAME, connection_string=constants.connection_string)
 
             orchestrator_connection.log_trace("Running process.")
 
@@ -33,7 +34,7 @@ def main():
                 task = db.get_new_task()
                 if not task:
                     break
-                process.process(orchestrator_connection, task)
+                process.process(orchestrator_connection, task, constants)
 
 
             break
@@ -57,11 +58,3 @@ def log_exception(orchestrator_connection: OrchestratorConnection) -> callable:
     def inner(type, value, traceback):
         orchestrator_connection.log_error(f"Uncaught Exception:\nType: {type}\nValue: {value}\nTrace: {traceback}")
     return inner
-
-
-class BusinessError(Exception):
-    pass
-
-
-if __name__ == '__main__':
-    main()

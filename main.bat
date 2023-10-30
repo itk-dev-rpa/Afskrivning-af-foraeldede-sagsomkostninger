@@ -13,4 +13,4 @@ rem Install requirements
 pip install -r requirements.txt
 
 rem Call robot script
-python src\framework.py %1 %2 %3
+python run.py %1 %2 %3
