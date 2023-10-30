@@ -8,8 +8,6 @@ from src.sap_process import SapProcess
 from src.queue import Task
 
 def process(orchestrator_connection: OrchestratorConnection, task: Task, constants: Constants) -> None:
-
-    orchestrator_connection.log_trace("Running process.")
     db = Database(table_name=config.TABLE_NAME, connection_string=constants.connection_string)
     sap_process = SapProcess()
 

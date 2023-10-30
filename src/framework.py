@@ -30,8 +30,8 @@ def main():
 
             while True:
                 # job queue loop
-                orchestrator_connection.log_trace("Getting new task.")
                 task = db.get_new_task()
+                orchestrator_connection.log_trace(f"Getting new task {task.row_id}")
                 if not task:
                     break
                 process.process(orchestrator_connection, task, constants)
