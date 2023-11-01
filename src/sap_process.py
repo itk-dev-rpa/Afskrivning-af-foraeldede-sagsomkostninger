@@ -116,22 +116,22 @@ def recover_to_start_menu(session) -> None:
         # Already at welcome screen
         session.findById('wnd[0]/usr/cntlIMAGE_CONTAINER/shellcont/shell/shellcont[1]/shell')
         return
-    except:  # TODO do fail, copy exception. import.
+    except pywintypes.com_error:
         session.findById('wnd[0]').sendVKey(+12)  # F12
 
     try:
         # Press "Ja" to abort on page Kontovedligehold
         session.findById('wnd[1]/usr/btnSPOP-OPTION1').press()
-    except:
+    except pywintypes.com_error:
         pass
 
     # SAP cannot press F12 if button is greyed out
     try:
         session.findById('wnd[0]').sendVKey(12)  # F12
-    except:
+    except pywintypes.com_error:
         pass
 
     try:
         session.findById('wnd[0]').sendVKey(12)  # F12
-    except:
+    except pywintypes.com_error:
         pass
