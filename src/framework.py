@@ -1,3 +1,4 @@
+import datetime
 import traceback
 import sys
 from OpenOrchestratorConnection.orchestrator_connection import OrchestratorConnection
@@ -17,6 +18,7 @@ def main():
     orchestrator_connection.log_trace("Process started.")
 
     constants = get_constants.get_constants(orchestrator_connection)
+    db = queue.Database(table_name=config.TABLE_NAME, connection_string=constants.connection_string)
 
     error_count = 0
     max_retry_count = 3
@@ -24,7 +26,6 @@ def main():
         try:
             orchestrator_connection.log_trace("Resetting.")
             reset.reset(orchestrator_connection)
-            db = queue.Database(table_name=config.TABLE_NAME, connection_string=constants.connection_string)
 
             orchestrator_connection.log_trace("Running process.")
 
@@ -34,13 +35,21 @@ def main():
                 orchestrator_connection.log_trace(f"Getting new task {task.row_id}")
                 if not task:
                     break
-                process.process(orchestrator_connection, task, constants)
+                try:
+                    process.process(orchestrator_connection, task, constants)
+                    now = datetime.datetime.now()
+                    db.update_row(row_id=task.row_id, column_data={'status': 'complete',
+                                                                   'date_completed': datetime.datetime(now.year,
+                                                                                                       now.month,
+                                                                                                       now.day,
+                                                                                                       now.hour,
+                                                                                                       now.minute,
+                                                                                                       now.second)})
 
-
+                except BusinessError as error:
+                    orchestrator_connection.log_error(f"{error}: {task.fp, task.aftale, task.bilag}")
+                    db.update_row(row_id=task.row_id, column_data={'status': f"{type(error).__name__}: {error}"})
             break
-
-        except BusinessError as error:
-            db.update_row(row_id=task.row_id, column_data={'status': f"{type(error).__name__}: {error}"})
 
         except Exception as error:
             error_count += 1

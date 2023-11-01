@@ -21,7 +21,7 @@ def get_constants(orchestrator_connection: OrchestratorConnection) -> Constants:
     try:
         orchestrator_connection.get_constant("Activate fosa")
         constants.dry_run = False
-    except:
+    except ValueError:
         orchestrator_connection.log_info("Dry run! SAP data will not be modified.")
 
     return constants

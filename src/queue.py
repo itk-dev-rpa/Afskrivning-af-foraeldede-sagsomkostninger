@@ -94,7 +94,7 @@ class Database:
         result = self._fetch_one(query)
 
         if result:
-            self.update_row(row_id=result[0], column_data={'status': 'in progress'})
+            self.update_row(row_id=result[0], column_data={'status': 'in progress'}) # TODO update where status new. Count affected rows (1). read docs on pyodbc courser "rows affected"
             result = Task(row_id=result[0], aftale=result[1], fp=result[2], bilag=result[3])
 
         return result
