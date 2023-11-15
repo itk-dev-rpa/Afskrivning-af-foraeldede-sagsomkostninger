@@ -1,5 +1,5 @@
-from OpenOrchestratorConnection.orchestrator_connection import OrchestratorConnection
-from ITK_dev_shared_components.SAP import sap_login
+from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
+from itk_dev_shared_components.sap import sap_login
 
 def reset(orchestrator_connection:OrchestratorConnection) -> None:
     """Clean up, close/kill all programs and start them again. """
@@ -20,6 +20,6 @@ def kill_all(orchestrator_connection:OrchestratorConnection) -> None:
     pass
 
 def open_all(orchestrator_connection:OrchestratorConnection) -> None:
-    opus_user, opus_pw = orchestrator_connection.get_credential("Anders SAP")
-    sap_login.login_using_cli(opus_user,opus_pw)
+    credentials = orchestrator_connection.get_credential("Anders SAP")
+    sap_login.login_using_cli(credentials.username, credentials.password)
     pass

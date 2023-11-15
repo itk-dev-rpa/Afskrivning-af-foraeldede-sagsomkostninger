@@ -1,4 +1,4 @@
-from OpenOrchestratorConnection.orchestrator_connection import OrchestratorConnection
+from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 
 
 class Constants:
@@ -16,7 +16,6 @@ def get_constants(orchestrator_connection: OrchestratorConnection) -> Constants:
 
     # Get email address to send error screenshots to
     constants.error_email = orchestrator_connection.get_constant("Error Email")
-    constants.connection_string = orchestrator_connection.get_constant('Connection string')
 
     try:
         orchestrator_connection.get_constant("Activate fosa")
