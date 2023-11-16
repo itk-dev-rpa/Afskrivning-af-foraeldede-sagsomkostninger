@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forbered_afskrivining_af_foraeldede_sagsomkostninger"
+version = "0.0.1"
+authors = [
+  { name="ITK Development", email="itk-rpa@mkb.aarhus.dk" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+]
+dependencies = [
+    "OpenOrchestrator",
+    "Pillow",
+    "ITK-dev-shared-components >= 1.0.0",
+    "openpyxl <= 3.1.2",
+    "PyPika <= 0.48.9",
+    "pyodbc <= 4.0.39",
+]

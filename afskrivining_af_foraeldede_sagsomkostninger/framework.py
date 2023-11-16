@@ -1,11 +1,11 @@
 import traceback
 import sys
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
-from src import get_constants
-from src import reset
-from src import error_screenshot
-from src import process
-from src.exceptions import BusinessError
+from afskrivining_af_foraeldede_sagsomkostninger import get_constants
+from afskrivining_af_foraeldede_sagsomkostninger import reset
+from afskrivining_af_foraeldede_sagsomkostninger import error_screenshot
+from afskrivining_af_foraeldede_sagsomkostninger import process
+from afskrivining_af_foraeldede_sagsomkostninger.exceptions import BusinessError
 import config
 from OpenOrchestrator.database.queues import QueueStatus
 
@@ -30,9 +30,13 @@ def main():
                 # job queue loop
                 queue_element = orchestrator_connection.get_next_queue_element(queue_name=config.QUEUE_NAME,
                                                                               set_status=True)
+                if queue_element is None:
+                    orchestrator_connection.log_info("Queue is empty.")
+                    clean_up(orchestrator_connection)
+                    return
+
                 orchestrator_connection.log_trace(f"Getting new task; ID {queue_element.id}.")
-                if not queue_element:
-                    break
+
                 try:
                     process.process(queue_element, constants)
                     orchestrator_connection.set_queue_element_status(element_id=queue_element.id,
@@ -55,6 +59,9 @@ def main():
                                               f"{error_type}: {error}\nTrace: {traceback.format_exc()}")
             error_screenshot.send_error_screenshot(constants.error_email, error, orchestrator_connection.process_name)
 
+    clean_up(orchestrator_connection)
+
+def clean_up(orchestrator_connection: OrchestratorConnection): # TODO introduce this to framework
     reset.clean_up(orchestrator_connection)
     reset.close_all(orchestrator_connection)
     reset.kill_all(orchestrator_connection)

@@ -1,6 +1,6 @@
 import json
-from src.get_constants import Constants
-from src.sap_process import recover_to_start_menu, delete_cost
+from afskrivining_af_foraeldede_sagsomkostninger.get_constants import Constants
+from afskrivining_af_foraeldede_sagsomkostninger.sap_process import recover_to_start_menu, delete_cost
 from itk_dev_shared_components.sap import multi_session
 from OpenOrchestrator.database.queues import QueueElement
 
