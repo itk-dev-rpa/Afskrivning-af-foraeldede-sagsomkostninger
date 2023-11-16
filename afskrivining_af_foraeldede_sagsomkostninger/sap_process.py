@@ -1,5 +1,6 @@
-from src.exceptions import BusinessError
+"""Procedure for interacting with SAP using COM objects"""
 import pywintypes
+from afskrivining_af_foraeldede_sagsomkostninger.exceptions import BusinessError
 # SAP table column ids
 AFTALE = 'VTREF'
 BILAGSNUMMER = 'OPBEL'
@@ -43,16 +44,11 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
                 # press 'Accept' button.
                 session.FindById('wnd[1]/tbar[0]/btn[0]').press()
             row_id += 1
-
-    except:
+    except pywintypes.com_error:
         # window not detected.
         pass
 
-    try:
-        postliste_table = session.FindById(
-        'wnd[0]/usr/tabsDATA_DISP/tabpDATA_DISP_FC1/ssubDATA_DISP_SCA:RFMCA_COV:0202/cntlRFMCA_COV_0100_CONT5/shellcont/shell')
-    except:
-        print("blah!")
+    postliste_table = session.FindById('wnd[0]/usr/tabsDATA_DISP/tabpDATA_DISP_FC1/ssubDATA_DISP_SCA:RFMCA_COV:0202/cntlRFMCA_COV_0100_CONT5/shellcont/shell')
 
     # Select columns
     postliste_table.selectColumn(AFTALE)
@@ -61,16 +57,16 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
 
     postliste_table.pressToolbarButton('&MB_FILTER')
 
-    FILTER_BOX_ID = 'wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105'
+    filter_box_id = 'wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105'
     # validate filter box layout
-    if session.findById(f"{FILTER_BOX_ID}/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
-            session.FindById(f"{FILTER_BOX_ID}/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
+    if session.findById(f"{filter_box_id}/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
+            session.FindById(f"{filter_box_id}/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
         raise ValueError("Filterbox unexpected layout")
 
     # enter Aftalenummer in filter field
-    session.findById(f"{FILTER_BOX_ID}/ctxt%%DYN001-LOW").text = aftale
+    session.findById(f"{filter_box_id}/ctxt%%DYN001-LOW").text = aftale
     # enter Bilagsnummer in filter field
-    session.findById(f"{FILTER_BOX_ID}/ctxt%%DYN002-LOW").text = bilag
+    session.findById(f"{filter_box_id}/ctxt%%DYN002-LOW").text = bilag
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
     # count table rows
@@ -79,8 +75,8 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
         raise BusinessError(f"Proces stoppet: Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
 
     # check if there is anything in 'Aft.type' column
-    if any([postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)]):
-        raise BusinessError(f"Manuel behandling (Aft.type).")
+    if any([postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)]):  # pylint: disable=(use-a-generator)
+        raise BusinessError("Manuel behandling (Aft.type).")
 
     for x in range(row_count):
         if postliste_table.GetCellValue(x, RIM_TYPE) == 'IN' and\

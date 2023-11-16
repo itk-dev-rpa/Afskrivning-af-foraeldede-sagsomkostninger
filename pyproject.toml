@@ -3,7 +3,7 @@ requires = ["setuptools>=65.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "forbered_afskrivining_af_foraeldede_sagsomkostninger"
+name = "afskrivining_af_foraeldede_sagsomkostninger"
 version = "0.0.1"
 authors = [
   { name="ITK Development", email="itk-rpa@mkb.aarhus.dk" },

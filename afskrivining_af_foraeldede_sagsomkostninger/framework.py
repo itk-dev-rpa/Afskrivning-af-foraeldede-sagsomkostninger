@@ -1,15 +1,23 @@
+"""This script is designed to run a business process using the OpenOrchestrator framework.
+It initializes the orchestrator connection, retrieves constants,
+and runs a process in a loop with error handling and retry mechanisms.
+
+This script is designed to be executed as the main entry point for the automation process.
+"""
 import traceback
 import sys
+from OpenOrchestrator.database.queues import QueueStatus
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 from afskrivining_af_foraeldede_sagsomkostninger import get_constants
 from afskrivining_af_foraeldede_sagsomkostninger import reset
 from afskrivining_af_foraeldede_sagsomkostninger import error_screenshot
 from afskrivining_af_foraeldede_sagsomkostninger import process
 from afskrivining_af_foraeldede_sagsomkostninger.exceptions import BusinessError
-import config
-from OpenOrchestrator.database.queues import QueueStatus
+from afskrivining_af_foraeldede_sagsomkostninger import config
+
 
 def main():
+    """OpenOrchestrator runs this method when a trigger is activated."""
     orchestrator_connection = OrchestratorConnection.create_connection_from_args()
     sys.excepthook = log_exception(orchestrator_connection)
 
@@ -32,7 +40,7 @@ def main():
                                                                               set_status=True)
                 if queue_element is None:
                     orchestrator_connection.log_info("Queue is empty.")
-                    clean_up(orchestrator_connection)
+                    reset.kill_all()
                     return
 
                 orchestrator_connection.log_trace(f"Getting new task; ID {queue_element.id}.")
@@ -49,7 +57,7 @@ def main():
                                                                      message=f"{type(error).__name__}: {error}")
             break
 
-        except Exception as error:
+        except Exception as error:  # pylint: disable=broad-exception-caught
             error_count += 1
             orchestrator_connection.set_queue_element_status(element_id=queue_element.id,
                                                              status=QueueStatus.FAILED,
@@ -59,16 +67,13 @@ def main():
                                               f"{error_type}: {error}\nTrace: {traceback.format_exc()}")
             error_screenshot.send_error_screenshot(constants.error_email, error, orchestrator_connection.process_name)
 
-    clean_up(orchestrator_connection)
+    reset.kill_all()
 
-def clean_up(orchestrator_connection: OrchestratorConnection): # TODO introduce this to framework
-    reset.clean_up(orchestrator_connection)
-    reset.close_all(orchestrator_connection)
-    reset.kill_all(orchestrator_connection)
 
 
 def log_exception(orchestrator_connection: OrchestratorConnection) -> callable:
-    def inner(type, value, traceback):
+    """Catch unexpected exceptions."""
+    def inner(type, value, traceback):  # pylint: disable=redefined-builtin, redefined-outer-name
         orchestrator_connection.log_error(f"Uncaught Exception:\nType: {type}\nValue: {value}\nTrace: {traceback}")
     return inner
 

@@ -1,2 +1,0 @@
-class BusinessError(Exception):
-    pass

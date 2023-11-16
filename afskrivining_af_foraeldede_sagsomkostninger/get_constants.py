@@ -1,6 +1,7 @@
+"""Get constants from OpenOrchestrator."""
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 
-
+# pylint: disable=too-few-public-methods
 class Constants:
     """Define your constants."""
     def __init__(self):

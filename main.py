@@ -12,7 +12,5 @@ os.chdir(script_directory)
 subprocess.run("python -m venv .venv", check=True)
 subprocess.run(r'.venv\Scripts\pip install .', check=True)
 
-#command_args = [r".venv\Scripts\python", r"framework.py", "-m", "main"] + sys.argv[1:]
-command_args = [r".venv\Scripts\python", r"forbered_afskrivining_af_foraeldede_sagsomkostninger"] + sys.argv[1:]
+command_args = [r".venv\Scripts\python", "afskrivining_af_foraeldede_sagsomkostninger"] + sys.argv[1:]
 subprocess.run(command_args, check=True)
-

@@ -12,12 +12,12 @@ and therefore Aarhus Municipality no longer has a claim to them.
 When the robot is run from OpenOrchestrator the main.bat file is run.
 
 ## Requirements
-Minimum python version 3.10
+Minimum python version 3.11
 
 # Testing 
 Run from terminal as python process
 ```bash
-python main.py "my task" "<connection string>" "<secret key>" "args"
+python main.py "test_fosa" "<connection string>" "<secret key>" "args"
 ```
 
 ## Unittest using an existing database
