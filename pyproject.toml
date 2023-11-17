@@ -19,7 +19,5 @@ dependencies = [
     "OpenOrchestrator",
     "Pillow",
     "ITK-dev-shared-components >= 1.0.0",
-    "openpyxl <= 3.1.2",
-    "PyPika <= 0.48.9",
-    "pyodbc <= 4.0.39",
+    "openpyxl <= 3.1.2"
 ]
