@@ -3,7 +3,7 @@ They initiate required applications and resources before execution, ensuring a c
 """
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 from itk_dev_shared_components.sap import sap_login
-from config import SAP_CREDENTIALS
+from afskrivining_af_foraeldede_sagsomkostninger import config
 
 def reset(orchestrator_connection:OrchestratorConnection) -> None:
     """Clean up, close/kill all programs and start them again. """
@@ -16,5 +16,5 @@ def kill_all() -> None:
 
 def open_all(orchestrator_connection:OrchestratorConnection) -> None:
     """Open all programs used by the robot."""
-    credentials = orchestrator_connection.get_credential(SAP_CREDENTIALS)
+    credentials = orchestrator_connection.get_credential(config.SAP_CREDENTIALS)
     sap_login.login_using_cli(credentials.username, credentials.password)
