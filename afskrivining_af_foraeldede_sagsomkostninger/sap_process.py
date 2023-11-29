@@ -57,16 +57,16 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
 
     postliste_table.pressToolbarButton('&MB_FILTER')
 
-    filter_box_id = 'wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105'
+    filter_box = session.findById('wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105')
     # validate filter box layout
-    if session.findById(f"{filter_box_id}/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
-            session.FindById(f"{filter_box_id}/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
+    if filter_box.findById("/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
+            filter_box.FindById("/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
         raise ValueError("Filterbox unexpected layout")
 
     # enter Aftalenummer in filter field
-    session.findById(f"{filter_box_id}/ctxt%%DYN001-LOW").text = aftale
+    filter_box.findById("/ctxt%%DYN001-LOW").text = aftale
     # enter Bilagsnummer in filter field
-    session.findById(f"{filter_box_id}/ctxt%%DYN002-LOW").text = bilag
+    filter_box.findById("/ctxt%%DYN002-LOW").text = bilag
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
     # count table rows
