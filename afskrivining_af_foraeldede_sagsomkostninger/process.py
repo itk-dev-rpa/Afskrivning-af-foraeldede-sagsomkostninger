@@ -4,7 +4,7 @@ from itk_dev_shared_components.sap import multi_session
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
 from OpenOrchestrator.database.queues import QueueElement
 from afskrivining_af_foraeldede_sagsomkostninger.sap_process import recover_to_start_menu, delete_cost
-import config
+from afskrivining_af_foraeldede_sagsomkostninger import config
 
 def process(orchestrator_connection: OrchestratorConnection, queue_element: QueueElement) -> None:
     """Get a session object to SAP, reset the UI, get queue element and delete cost.
