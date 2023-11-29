@@ -8,7 +8,6 @@ import traceback
 import sys
 from OpenOrchestrator.database.queues import QueueStatus
 from OpenOrchestrator.orchestrator_connection.connection import OrchestratorConnection
-from afskrivining_af_foraeldede_sagsomkostninger import get_constants
 from afskrivining_af_foraeldede_sagsomkostninger import reset
 from afskrivining_af_foraeldede_sagsomkostninger import error_screenshot
 from afskrivining_af_foraeldede_sagsomkostninger import process
@@ -23,7 +22,7 @@ def main():
 
     orchestrator_connection.log_trace("Process started.")
 
-    constants = get_constants.get_constants(orchestrator_connection)
+    error_email = orchestrator_connection.get_constant(config.ERROR_EMAIL)
 
     error_count = 0
     max_retry_count = 3
@@ -46,7 +45,7 @@ def main():
                 orchestrator_connection.log_trace(f"Getting new task; ID {queue_element.id}.")
 
                 try:
-                    process.process(queue_element, constants)
+                    process.process(orchestrator_connection, queue_element)
                     orchestrator_connection.set_queue_element_status(element_id=queue_element.id,
                                                                      status=QueueStatus.DONE)
 
@@ -65,7 +64,7 @@ def main():
             error_type = type(error).__name__
             orchestrator_connection.log_error(f"Error caught during process. Number of errors caught: {error_count}."
                                               f"{error_type}: {error}\nTrace: {traceback.format_exc()}")
-            error_screenshot.send_error_screenshot(constants.error_email, error, orchestrator_connection.process_name)
+            error_screenshot.send_error_screenshot(error_email.value, error, orchestrator_connection.process_name)
 
     reset.kill_all()
 
