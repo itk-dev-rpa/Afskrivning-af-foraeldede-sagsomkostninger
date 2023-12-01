@@ -25,8 +25,8 @@ def main():
     error_email = orchestrator_connection.get_constant(config.ERROR_EMAIL)
 
     error_count = 0
-    max_retry_count = config.MAX_RETRY_COUNT
-    for _ in range(max_retry_count):
+
+    for _ in range(config.MAX_RETRY_COUNT):
         try:
             orchestrator_connection.log_trace("Resetting.")
             reset.reset(orchestrator_connection)
