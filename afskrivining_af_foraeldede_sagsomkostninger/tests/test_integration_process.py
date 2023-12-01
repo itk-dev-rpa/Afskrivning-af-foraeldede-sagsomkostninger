@@ -14,9 +14,9 @@ class RunProcess(unittest.TestCase):
         sap_login.login_using_cli(credentials[0], credentials[1])
         session = multi_session.get_all_sap_sessions()[0]
 
-        fp = '50015577'
-        aftale = '1882120'
-        bilag = "222000515037"
+        fp = ''
+        aftale = ''
+        bilag = ''
         delete_cost(session=session, fp=fp, aftale=aftale, bilag=bilag, dry_run=True)
 
 
