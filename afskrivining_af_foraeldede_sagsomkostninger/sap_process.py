@@ -29,9 +29,9 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
     session.findById('wnd[0]/usr/ctxtGPART_DYN').text = fp
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
-    try:
-        # detect window "Forretningspartner * Entries" (pseudo table)
-        session.findById('wnd[1]/usr')
+    # detect window "Forretningspartner * Entries" (pseudo table)
+    if session.findById('wnd[1]/usr', False) is not None:
+        # pop-up detected
         id_column = session.FindById('wnd[1]/usr/lbl[103,1]')
         if not id_column.text == "ForretnPartner":
             raise ValueError(f"Unexpected column. Expected 'ForretnPartner'. Found {id_column.text}")
@@ -44,9 +44,6 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
                 # press 'Accept' button.
                 session.FindById('wnd[1]/tbar[0]/btn[0]').press()
             row_id += 1
-    except pywintypes.com_error:
-        # window not detected.
-        pass
 
     postliste_table = session.FindById('wnd[0]/usr/tabsDATA_DISP/tabpDATA_DISP_FC1/ssubDATA_DISP_SCA:RFMCA_COV:0202/cntlRFMCA_COV_0100_CONT5/shellcont/shell')
 
