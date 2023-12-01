@@ -72,7 +72,7 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
         raise BusinessError(f"Proces stoppet: Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
 
     # check if there is anything in 'Aft.type' column
-    if any([postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)]):  # pylint: disable=(use-a-generator)
+    if any(postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)):
         raise BusinessError("Manuel behandling (Aft.type).")
 
     for x in range(row_count):
