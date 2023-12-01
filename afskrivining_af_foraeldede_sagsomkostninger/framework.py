@@ -58,7 +58,8 @@ def main():
 
         except Exception as error:  # pylint: disable=broad-exception-caught
             error_count += 1
-            orchestrator_connection.set_queue_element_status(element_id=queue_element.id,
+            if queue_element:
+                orchestrator_connection.set_queue_element_status(element_id=queue_element.id,
                                                              status=QueueStatus.FAILED,
                                                              message=f"{type(error).__name__}: {error}")
             error_type = type(error).__name__
