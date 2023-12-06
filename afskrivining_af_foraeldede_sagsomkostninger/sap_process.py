@@ -29,21 +29,19 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
     session.findById('wnd[0]/usr/ctxtGPART_DYN').text = fp
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
-    # detect window "Forretningspartner * Entries" (pseudo table)
+    # detect window "Forretningspartner * Entries"
     if session.findById('wnd[1]/usr', False) is not None:
         # pop-up detected
-        id_column = session.FindById('wnd[1]/usr/lbl[103,1]')
-        if not id_column.text == "ForretnPartner":
-            raise ValueError(f"Unexpected column. Expected 'ForretnPartner'. Found {id_column.text}")
-        # iterate through list of PF.
-        row_id = 3
-        while True:
+        for row_id in range(3, 5):
             fp_row = session.FindById(f'wnd[1]/usr/lbl[103,{row_id}]')
             if fp_row.text == fp:
                 fp_row.SetFocus()
                 # press 'Accept' button.
                 session.FindById('wnd[1]/tbar[0]/btn[0]').press()
-            row_id += 1
+                break
+        else:
+            # range exhausted
+            raise ValueError(f"ForretnPartner '{fp}' was not found in pop-up.")
 
     postliste_table = session.FindById('wnd[0]/usr/tabsDATA_DISP/tabpDATA_DISP_FC1/ssubDATA_DISP_SCA:RFMCA_COV:0202/cntlRFMCA_COV_0100_CONT5/shellcont/shell')
 
