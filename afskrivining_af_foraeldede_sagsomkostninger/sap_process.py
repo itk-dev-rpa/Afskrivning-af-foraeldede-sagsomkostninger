@@ -1,5 +1,6 @@
-from src.exceptions import BusinessError
+"""Procedure for interacting with SAP using COM objects"""
 import pywintypes
+from afskrivining_af_foraeldede_sagsomkostninger.exceptions import BusinessError
 # SAP table column ids
 AFTALE = 'VTREF'
 BILAGSNUMMER = 'OPBEL'
@@ -11,6 +12,7 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
     """Pass the variables forretningspartner, aftalekonto and bilagsnummer in order to delete the dept.
 
     Args:
+        session: SAP GuiSession object
         fp: forretningspartner
         aftale: aftalekonto
         bilag: bilagsnummer
@@ -27,31 +29,21 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
     session.findById('wnd[0]/usr/ctxtGPART_DYN').text = fp
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
-    try:
-        # detect window "Forretningspartner * Entries" (pseudo table)
-        session.findById('wnd[1]/usr')
-        id_column = session.FindById('wnd[1]/usr/lbl[103,1]')
-        if not id_column.text == "ForretnPartner":
-            raise ValueError(f"Unexpected column. Expected 'ForretnPartner'. Found {id_column.text}")
-        # iterate through list of PF.
-        row_id = 3
-        while True:
+    # detect window "Forretningspartner * Entries"
+    if session.findById('wnd[1]/usr', False) is not None:
+        # pop-up detected
+        for row_id in range(3, 5):
             fp_row = session.FindById(f'wnd[1]/usr/lbl[103,{row_id}]')
             if fp_row.text == fp:
                 fp_row.SetFocus()
                 # press 'Accept' button.
                 session.FindById('wnd[1]/tbar[0]/btn[0]').press()
-            row_id += 1
+                break
+        else:
+            # range exhausted
+            raise ValueError(f"ForretnPartner '{fp}' was not found in pop-up.")
 
-    except:
-        # window not detected.
-        pass
-
-    try:
-        postliste_table = session.FindById(
-        'wnd[0]/usr/tabsDATA_DISP/tabpDATA_DISP_FC1/ssubDATA_DISP_SCA:RFMCA_COV:0202/cntlRFMCA_COV_0100_CONT5/shellcont/shell')
-    except:
-        print("blah!")
+    postliste_table = session.FindById('wnd[0]/usr/tabsDATA_DISP/tabpDATA_DISP_FC1/ssubDATA_DISP_SCA:RFMCA_COV:0202/cntlRFMCA_COV_0100_CONT5/shellcont/shell')
 
     # Select columns
     postliste_table.selectColumn(AFTALE)
@@ -60,16 +52,16 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
 
     postliste_table.pressToolbarButton('&MB_FILTER')
 
-    FILTER_BOX_ID = 'wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105'
+    filter_box = session.findById('wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105')
     # validate filter box layout
-    if session.findById(f"{FILTER_BOX_ID}/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
-            session.FindById(f"{FILTER_BOX_ID}/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
+    if filter_box.findById("/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
+            filter_box.FindById("/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
         raise ValueError("Filterbox unexpected layout")
 
     # enter Aftalenummer in filter field
-    session.findById(f"{FILTER_BOX_ID}/ctxt%%DYN001-LOW").text = aftale
+    filter_box.findById("/ctxt%%DYN001-LOW").text = aftale
     # enter Bilagsnummer in filter field
-    session.findById(f"{FILTER_BOX_ID}/ctxt%%DYN002-LOW").text = bilag
+    filter_box.findById("/ctxt%%DYN002-LOW").text = bilag
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
     # count table rows
@@ -78,8 +70,8 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
         raise BusinessError(f"Proces stoppet: Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
 
     # check if there is anything in 'Aft.type' column
-    if any([postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)]):
-        raise BusinessError(f"Manuel behandling (Aft.type).")
+    if any(postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)):
+        raise BusinessError("Manuel behandling (Aft.type).")
 
     for x in range(row_count):
         if postliste_table.GetCellValue(x, RIM_TYPE) == 'IN' and\
