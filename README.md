@@ -1,12 +1,8 @@
 # Afskrivning af forældede sagsomkostninger
 
-
 Outdated fees and interest are to be deleted once a month.
 The prerequisite is that they are outdated within Aarhus Municipality, meaning they have not been sent for collection to the Danish Tax Agency (Gældsstyrelsen),
 and therefore Aarhus Municipality no longer has a claim to them.
-
-## Configurations
-`config.py` contains OpenOrchestrator constant names and SQL schema for the job queue.
 
 ## Links
 [PDD](https://aarhuskommune.sharepoint.com/:w:/r/Sites/afd-afdsite3229/Delte%20dokumenter/Drift%20%26%20%C3%98konomi/Forretningsudvikling%20og%20debitorstyring/PDD%20(RPA)/PDD%20-%20%20Afskrivning%20af%20for%C3%A6ldede%20sagsonkostninger%202.docx?d=w59fba12fb8634aa6972303b918fc9077&csf=1&web=1&e=85JQ29)
@@ -14,23 +10,14 @@ and therefore Aarhus Municipality no longer has a claim to them.
 [Reset Opus password](https://portal-k1-nc-22.kmd.dk/webdynpro/resources/kmd.dk/sik~passwordselfservice/PasswordSelfService#)
 
 When the robot is run from OpenOrchestrator the main.bat file is run.
-main.bat does a few things:
-1. A virtual environment is automatically setup with the required packages.
-2. The framework is called passing on all arguments needed by [OpenOrchestratorConnection](https://github.com/itk-dev-rpa/OpenOrchestratorConnection).
 
 ## Requirements
-Minimum python version 3.10
+Minimum python version 3.11
 
 # Testing 
-
-Run from CMD (main.bat)
-```bash
-main "test_fosa" "Driver={ODBC Driver 17 for SQL Server};Server=SRVSQLHOTEL03;Database=MKB-ITK-RPA;Trusted_Connection=yes;" "<secret key>"
-```
-
 Run from terminal as python process
-```python
-python run.py "test_fosa" "Driver={ODBC Driver 17 for SQL Server};Server=SRVSQLHOTEL03;Database=MKB-ITK-RPA;Trusted_Connection=yes;" "<secret key>"
+```bash
+python main.py "test_fosa" "<connection string>" "<secret key>" "args"
 ```
 
 ## Unittest using an existing database
