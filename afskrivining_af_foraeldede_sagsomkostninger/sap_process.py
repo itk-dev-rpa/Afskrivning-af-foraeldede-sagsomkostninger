@@ -48,26 +48,26 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
     # Select columns
     postliste_table.selectColumn(AFTALE)
     postliste_table.selectColumn(BILAGSNUMMER)
-    # click Filter button
 
+    # click Filter button
     postliste_table.pressToolbarButton('&MB_FILTER')
 
     filter_box = session.findById('wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105')
     # validate filter box layout
-    if filter_box.findById("/txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
-            filter_box.FindById("/txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
+    if filter_box.findById("txt%_%%DYN001_%_APP_%-TEXT").text != 'Aftale' or \
+            filter_box.FindById("txt%_%%DYN002_%_APP_%-TEXT").text != 'Bilagsnummer':
         raise ValueError("Filterbox unexpected layout")
 
     # enter Aftalenummer in filter field
-    filter_box.findById("/ctxt%%DYN001-LOW").text = aftale
+    filter_box.findById("ctxt%%DYN001-LOW").text = aftale
     # enter Bilagsnummer in filter field
-    filter_box.findById("/ctxt%%DYN002-LOW").text = bilag
+    filter_box.findById("ctxt%%DYN002-LOW").text = bilag
     session.findById('wnd[0]').sendVKey(0)  # Press Enter
 
     # count table rows
     row_count = postliste_table.RowCount
     if row_count == 0:
-        raise BusinessError(f"Proces stoppet: Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
+        raise BusinessError(f"Postliste for fp {fp}, Aftalenummer {aftale} er tom.")
 
     # check if there is anything in 'Aft.type' column
     if any(postliste_table.GetCellValue(x, AFTALE_TYPE) for x in range(row_count)):
@@ -98,6 +98,7 @@ def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None
 
     # click the button "Bogføring"
     session.FindById('wnd[0]/tbar[0]/btn[11]').press()
+
 
 def recover_to_start_menu(session) -> None:
     """This method returns SAP to the main screen. Regardless of the current screen, attempt to return to welcome screen.
