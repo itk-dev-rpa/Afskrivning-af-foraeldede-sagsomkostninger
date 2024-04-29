@@ -7,6 +7,6 @@ MAX_RETRY_COUNT = 3
 
 # Configuration for the process, where runtime parameters are defined.
 QUEUE_NAME = 'Afskrivning-af-foraeldede-sagsomkostninger'
-SAP_CREDENTIALS = "Mathias SAP"
+SAP_CREDENTIALS = "SAP FOSA"
 ERROR_EMAIL = "Error Email"
 DISABLE_DRY_RUN = "disable dry run"
