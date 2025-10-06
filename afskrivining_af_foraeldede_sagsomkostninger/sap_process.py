@@ -8,6 +8,7 @@ AFTALE_TYPE = 'ZZAGREEMENTTYPE'
 RIM_TYPE = 'ZZSBS_EFI_AGRTYPE'
 AFTALE_STATUS = 'ZZAFTALESTATUS'
 
+
 def delete_cost(session, fp: str, aftale: str, bilag: str, dry_run=True) -> None:
     """Pass the variables forretningspartner, aftalekonto and bilagsnummer in order to delete the dept.
 

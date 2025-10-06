@@ -36,7 +36,7 @@ def main():
             while True:
                 # job queue loop
                 queue_element = orchestrator_connection.get_next_queue_element(queue_name=config.QUEUE_NAME,
-                                                                              set_status=True)
+                                                                               set_status=True)
                 if queue_element is None:
                     orchestrator_connection.log_info("Queue is empty.")
                     reset.kill_all()
@@ -60,8 +60,8 @@ def main():
             error_count += 1
             if queue_element:
                 orchestrator_connection.set_queue_element_status(element_id=queue_element.id,
-                                                             status=QueueStatus.FAILED,
-                                                             message=f"{type(error).__name__}: {error}")
+                                                                 status=QueueStatus.FAILED,
+                                                                 message=f"{type(error).__name__}: {error}")
             error_type = type(error).__name__
             orchestrator_connection.log_error(f"Error caught during process. Number of errors caught: {error_count}."
                                               f"{error_type}: {error}\nTrace: {traceback.format_exc()}")
@@ -70,12 +70,12 @@ def main():
     reset.kill_all()
 
 
-
 def log_exception(orchestrator_connection: OrchestratorConnection) -> callable:
     """Catch unexpected exceptions."""
     def inner(type, value, traceback):  # pylint: disable=redefined-builtin, redefined-outer-name
         orchestrator_connection.log_error(f"Uncaught Exception:\nType: {type}\nValue: {value}\nTrace: {traceback}")
     return inner
+
 
 if __name__ == '__main__':
     main()
