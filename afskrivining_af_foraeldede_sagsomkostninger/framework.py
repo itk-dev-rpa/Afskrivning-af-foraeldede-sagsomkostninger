@@ -75,7 +75,3 @@ def log_exception(orchestrator_connection: OrchestratorConnection) -> callable:
     def inner(type, value, traceback):  # pylint: disable=redefined-builtin, redefined-outer-name
         orchestrator_connection.log_error(f"Uncaught Exception:\nType: {type}\nValue: {value}\nTrace: {traceback}")
     return inner
-
-
-if __name__ == '__main__':
-    main()

@@ -19,7 +19,3 @@ class RunProcess(unittest.TestCase):
         aftale = ''
         bilag = ''
         delete_cost(session=session, fp=fp, aftale=aftale, bilag=bilag, dry_run=True)
-
-
-if __name__ == '__main__':
-    unittest.main()
